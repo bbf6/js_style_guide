@@ -1,0 +1,353 @@
+:version: 0.0.1
+== Guia de estilos para JavaScript.
+:reproducible:
+:toc:
+
+Versión del documento {version}
+
+=== Propósito
+
+Este documento pretende ser una recopilación de recomendaciones y buenas prácticas al momento de trabajar bajo el lenguaje de programación de JavaScript.
+
+Este documento tiene una segunda intención: Ayudarte a mejorar la calidad y velocidad de tu trabajo.
+
+Desde los años 90's y hasta la fecha, gente muy obsesionada con la optimización de procesos (managers e ingenieros industriales) han descubierto una y otra vez que los desarrolladores de software pasan el 20% de su tiempo escribiendo código y un 80% leyendolo. Lo interesante es que a lo largo de estas 3 decadas y a pesar de que los desarrolladores han cambiado de lenguages, IDEs, metodologías, paradigmas y arquitecturas varias veces; esta proporción se ha mantenido más o menos sin cambios.
+
+Por esto es más que razonable dedicar un poco de tiempo y atención al detalle a escribir código que sea lo más sencillo de leer y comprender posible.
+
+Este documento tiene una tercera intención: Ser un acuerdo grupal. Estos acuerdos también ayudan a normalizar el código independientemente de quien ni cuantas personas trabajen en él, lo que reduce la "variación de acentos" dentro del lenguaje favoreciendo una vez más, la legibilidad del código.
+
+Solo con ser consistentes, es posible reducir la cantidad de documentación y entrenamiento necesaria para entender el sistema. La documentación puede ser más concisa, y una vez que un programador ha aprendido un programa o un modulo del mismo, puede intuir el resto del sistema.
+
+Si hay algo dentro de este documento que no tenga sentido para ti, debes tomarte como una misión personal el que sea correguido.
+
+=== Lo que este documento no es
+
+Este documento no es una lista de reglas a serguir ciegamente: Este documento no aspira a sustituir, ni menoscabar la capacidad juicio de un desarrollador profesional y competenete como puede ser la persona que está leyendo esto. Más que una serie de reglas, considera esto como una oportunidad para abrir la conversación a cerca de ello.
+
+Este documento no es un martillo. Es perfectamente normal que, mientras escribes código, termines encontrandote con "excepciones a la regla" y dependerá de ti, como el profesional que eres, discernir cuando dicha situación sea, dicha situación.
+
+Este documento no está escrito en piedra. Conforma el equipo de trabajo implementa las recomendaciones de este documento, se encontrarán eventualmente con situaciones que les hagan reevaluar, modificar, omitir y agregar tantas cosas como vean necesarias.
+
+=== Idioma
+
+El código se escribe en inglés.
+
+Las palabras reservadas del lenguaje, las APIs nativas y toda biblioteca que hayas descargado de npm están escritas en inglés. Ya que javascript es un lenguaje de alto nivel, tiene como objetivo acercarse a un nivel cercano al lenguaje natural humano. Por lo tanto, es necesario homogenizar el idioma pues estar cambiando de inglés a español constantemente, interrumpe el flujo natural de la lectura del código.
+
+Existe una segunda razón. Si en algún momento necesitas colaborar con un desarrollador no hispanohablante, tendrá los mismos problemas que tendrías tú para etntender el código de un fránces.
+
+=== Paradigma funcional VS paradigma orientado a objetos
+
+Javascript es un lenguaje que pretende soportar los paradigmas funcional y orientado a objetos ...y falla en ambos.
+
+Estoy exajerando, a lo que me refiero es que siempre ofrece alternativas para saltarse al paradigma. Pero eso no supone un impedimento mayor para seguir los principios de cada paradigma. Tecnicamente hablando, es posible aplicar los principios de la programación orientada a objetos en lenguajes estructurados como VisualBasic 6.
+
+En el caso de JavaScript usaremos los principios de ambos paradigmas cuando tenga sentido hacerlo.
+
+evita la mutabilidad en tus funciones ...cuando tenga sentido hacerlo.
+
+=== Declaración de valores
+
+Queda prohíbido el uso de `var` para declarar un valor.
+
+[source,javascript]
+----
+var distance = 780
+----
+
+La palabra reservada del lenguaje `var` ignora el scope en el que se declara el valor y en su lugar lo inicializa a nivel global, lo que puede provocar sobreescritura de variables por colisión de nombres. La única razón por la que aún no se ha removido del lenguaje es porque los browsers necesitan dar soporte a páginas web construidas antes del 2015.
+
+En su lugar se debe usar la palabra reservada `const` que no solo corrige el problema del scope sino que también respeta el principio de programación funcional de no permitir que un valor cambie después de ser asignado.
+
+[source,javascript]
+----
+// declaración correcta
+const distance = 780
+
+// Esto es detectado como un error, el valor no puede ser modificado
+distance = 44
+----
+
+Se permite el uso de `let`.
+
+[source,javascript]
+----
+// let permite mutabilidad de variables
+let distance = 780
+distance = 44
+----
+
+`let` permite que una variable cambie de valor durante su ciclo de vida, lo cual, a ojos de un programado funcional es una aberración de la naturaleza.
+
+Si puedes refactorizar tu código de tal forma que no sea necesario mutar tu valor, hazlo. Debes usar `let` solo como último recurso.
+
+Las funciones se declaran como `funciones de flecha`:
+
+[source,javascript]
+----
+// incorrecto
+function circleArea (radius) {
+  return Math.PI * radius ** 2
+}
+
+// también incorrecto
+const circleArea = function (radius) {
+  return Math.PI * radius ** 2
+}
+
+// correcto
+const circleArea = radius => Math.PI * radius ** 2
+----
+
+En javascript, las funciones son consideradas valores como cualquier otro dato y por lo tanto su declaración no debería ser tratada de forma distinta. La declaración de `función de flecha` es preferible pues su escritura es más minimalista.
+
+Sin embargo, si una función de flecha es declarada como atributo de un objeto, esta no tiene acceso a la referencia del objeto `this` y por lo tanto no puede utilizar ningun otro attributo en el mismo objeto.
+
+Dicho de otra forma, si necesitas que un objeto contenga una función como atributo, es forzoso utilizar una función normal.
+
+[source,javascript]
+----
+const myComplexObject = {
+  radius: 82,
+
+  // incorrecto, this.radius es inaccesible para una función de flecha
+  circleArea: () => Math.PI * this.radius ** 2
+
+  // incorrecto, este caso funciona ya que la función no es dependiente del
+  // objeto pero es preferible normalizar las funciones a un solo estilo
+  // para no entorpecer la lectura
+  circleArea: radius => Math.PI * radius ** 2
+
+  // incorrecto, no hace falta la palabra reservada "function"
+  circleArea: function (radius) { return Math.PI * radius ** 2 }
+
+  // correcto, el nombre de la función pasa a ser el nombre del atributo
+  circleArea(radius) { return Math.PI * radius ** 2 }
+
+  // este caso es correcto y forzosamente necesario ya que la función
+  // depende de una variable dentro del objeto en el que está declarada
+  circleArea() { return Math.PI * this.radius ** 2 }
+}
+----
+
+=== Espacios en blanco y saltos de línea
+
+Los operadores artitmeticos, booleanos, comparadores y de asignación llevan un espacio de separación a la izquierda y derecha.
+
+Las únicas excepciones son los operadores unitarios `!`, `++`, `--`.
+
+[source,javascript]
+----
+const result = (15 * index) - (height / distance)
+const canAccess = (age >= 18) && !expired
+----
+
+Las parejas de llaves (independientemente de si pertenecen a un objeto o al scope de un bloque) llevan un espacio de separación de su contenido:
+
+[source,javascript]
+----
+const point = { x: 120.0, y: 49.3 }
+
+try { destroyDatabase() }
+catch (error) { console.error(error) }
+----
+
+Las llaves de la interpolación de strings son la excepción:
+
+[source,javascript]
+----
+const getWelcomeMessage = name => `Bienvenido/a ${name}!`
+----
+
+Los parentesis y los corchetes no llevan espacio de separación de su contenido:
+
+[source,javascript]
+----
+const createPoint = (x, y) => ({ x, y })
+
+const shuffledCouples = [[5, 2], [6, 3], [8, 4], [1, 7]]
+----
+
+Con excepción de `this`, `super` y `break`; todas las palabras reservadas del lenguaje llevan un espacio de separación a su derecha:
+
+[source,javascript]
+----
+import isActive from './somePlace'
+
+try {
+  if (await isActive()) return true
+  else throw new Error('Not active anymore.')
+}
+catch (error) {
+  console.error(error)
+}
+finally {
+  release()
+}
+----
+
+Las constantes y variables no llevan separación por salto de línea:
+
+[source,javascript]
+----
+const angle = 0.45
+const sin = Math.sin(angle)
+let radius = 58
+----
+
+Las funciones están separadas por un único salto de línea:
+
+[source,javascript]
+----
+const findUserById = id => {
+  if (!id) return null
+  return users.find(u => u.id === id)
+}
+
+const addUser = user => {
+  if (!user) throw 'No user provided'
+  users.push(user)
+}
+
+const editUser = user => {
+  const editableUser = findUserById(user.id)
+}
+----
+
+Si las funciones tienen una sola línea de código, entonces no necesitan el salto de linea.
+
+[source,javascript]
+----
+const celsiusToFarenheit = celsius => (celsius * 9 / 5) + 32
+const farenheitToCelsius = farenheit => (fahrenheit - 32) * 5 / 9
+----
+
+Declaraciones de arrays y objetos con una lista de atributos demasiado grandes se listan en vertical.
+
+
+
+Los imports no llevan separación de salto de linea.
+
+
+Es tentador separar en "tematicas" los imports para tener más claridad de qué dependencias tiene el archivo en el que estás trabajando. Pero si estás intentando organizar los imports es por que en primer lugar tienes demasiadas dependencias. Tomate el tiempo de analizar porqué hay tantas. Se dice que a mayor cantidad de dependencias, mayor es la cohesión de una parte del sistema. Entre más cohesión, mayor es la probabilidad de que esa parte del sistema necesite ser modificada cuando alguna de sus dependencias cambie.
+
+
+
+
+Las funciones no llevan saltos de línea dentro de su defininción.
+
+
+Para la mente humana, la lectura de un segmento de código no es distinta de la lectura de otro tipo de texto. Al usar un salto de línea para separar un programa en varias partes, estamos intentando organizar el algoritmo subyaciente en secciones e ideas concretas. Si bien el código es más legible, esto solo trata los sintomas pero ignora el problema raíz: Depende de como se vea, el código está rompiendo, bien el principio de "Single responsability" de la programación orientada a objetos, o el principio de "función pura" de la programación funcional.
+
+Dicho de otra forma, estamos intentando segmentar/organizar el código por que la función "sabe hacer demasiadas cosas".
+
+La solución es mover cada sección de código a su propia función. Así ganamos la oportunidad de explicitar (dar nombre) al proceso que estamos computando.
+
+Darle nombre a un fragmento de código aumenta nuestro vocavulario del dominio del sistema y abre las puertas a un nivel más elevado de abstración; lo que nos permite expresarnos más fácilmente sobre ello en la documentación o incluso en una conversación con otros compañeros del equipo.
+
+También es importante señalar que separar en funciones más pequeñas no siempre simplifica el entendimiento del código por si mismo, pues si este mantiene un alto nivel de cohesión con la función principal, entonces las nuevas funciones, por pequeñas que sean, no pueden existir fuera de su conexto. Sin embargo, este es un primer paso en la dirección correcta en la busqueda de un diseño más correcto.
+
+
+=== `,` y `;`
+
+Los elementos que se separan por comas en la misma línea llevan un espacio de separación a la derecha.
+
+
+El `;` solo debe usarse cuando es indispensable. Usarlo al final de cada instrucción es completamente incesario y solo añade "ruido" en la lectura.
+
+Si tienes un fragmento de código en el que necesitas usar `;`, debes evaluar la posibilidad de refactorizarlo de tal manera que no sea necesario usarlo.
+
+
+
+
+
+=== Operador de igualdad `===`, `!==`
+
+Para comparar la igualdad o diferencia de dos valores primitivos se usan `===`, `!==`
+
+==== `true` y `false` no se comparan
+
+Es redundante utilizar estos operadores para evaluar una expresión booleana contra `true` o `false`.
+
+
+==== Los valores `decimal` no se evaluan con `===` ni `!==`
+
+Los valores de punto flotante acarrean problemas de precisión al ir aplicando operaciones aritmeticas que vuelven a estos operadores inutiles en la práctica.
+
+https://www.embeddeduse.com/2019/08/26/qt-compare-two-floats/
+
+Utiliza una evaluación basada en la constante `Number.EPSILON` para garantizar que dos valores son lo suficientemente cercanos para considerarse iguales.
+
+[source,javascript]
+----
+const areEqual = (a, b) => Math.abs(a - b) < Number.EPSILON
+
+const firstValue = 0.1 + 0.2
+const secondValue = 0.3
+
+if (firstValue === secondValue)
+  console.log('Son iguales')
+
+if (areEqual(firstValue, secondValue))
+  console.log('Son iguales')
+----
+
+
+
+
+
+
+
+=== Interpolación vs concatenación
+=== Strings en una sola linea
+=== Array vs Set vs Map
+=== Objetos (inicialización, usar valor como variable, casos especiales al comienzo, funciones al final, usar . en vez de [])
+=== longitud de linea (80, 120) 700px, Complejidad de tokens
+=== Estructura de archivos (dependencias, contenido, interfaz publica)
+=== Nombres de variables y archivos (camelCase, constante vs val SCREAMING_SNAKE_CASE, nombres concretos, no abreviaciones, no sobre explicar, is/can/etc para booleanos)
+=== Hungarian notation vs Ducktyping
+=== Estructura de funciones (firma _, throw not implemented, firma desestructurada ({x, y, z}), valores default, no anidar funciones pero una función puede retornar otra función, default params al final)
+=== Función pura (no efectos secundarios, single responsability, inmutable, valor de retorno) (función vs metodo vs procedimiento vs sub rutina)
+=== Monads (para objetos complejos)
+=== Promise vs callback
+=== Identación (monads, anidación profunda)
+=== Comentarios (jdocs, no ocultar entidades ni significados, solo interfaz publica, redirigir a documentación, no usar para guardar código, linters configs)
+Good code its like a joke; it needs no explanation
+=== Anotaciones
+  Filosofía del boyscout.
+  TODO: Use TODO to note missing features or functionality that should be added at a later date.
+  FIXME: Use FIXME to note broken code that needs to be fixed.
+  OPTIMIZE: Use OPTIMIZE to note slow or inefficient code that may cause performance problems.
+  HACK: Use HACK to note code smells where cuestionable coding practices where used and should be refactored.
+  REVIEW: Use REVIEW to note anything that should be looked at to confirm it is working as intended. For example: # REVIEW: Are we sure this is how the client does X currently?
+=== Magic comments
+  eslint
+  webpack
+  #!/usr/bin/env node (para script a ser ejecutados desde el bash o desde un cron)
+=== if/else/switch return/throw (unica linea, sin llaves, booleanos simples, elsif vs switch vs if return)
+=== operador ternario (? :) solo para asignaciones. nunca anidar
+=== try/catch solo cuando el error es recuperable
+=== for/while vs Array API vs recursión (forEach vs map vs ser especifico)
+=== Prototype (do not modify)
+=== Classes (solo para entidades complejas, asegura Liskov)
+=== Imports (no usar require(), no usar wildcard, importar de un archivo solo una vez, sin separación de linea entre imports, orden, no incluir extensión del archivo .js .jsx .json)
+=== Exports (exportar funciones en vez de objetos, el default export debe llamarse igual que el archivo en el que se encuentra, index es la excepción)
+=== Café para los más cafeteros (100 lineas por archivo, 10 lineas por función, como máximo 3 niveles de identación)
+
+
+
+
+// incorrecto
+function quadraticEquation (a, b, c) {
+  return (-b + Math.sqrt(Math.pow(b, 2) - (4 * a * c))) / (2 * a)
+}
+
+
+
+
+Sometimes you’ll realize your first choice of name was inappropriate, but if it isn’t used in a published API then you should strongly consider renaming it even if your development environment doesn’t make it easy.
+
+Nombra las entidades fisicas por lo que son y no por lo que hacer.
+Nombra las entidades logicas por lo que hacen y no por lo que son.
+Usa el contexto para simplificar el nombre de tu valor.
