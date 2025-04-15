@@ -1,7 +1,9 @@
 :version: 0.0.1
 == Guia de estilos para JavaScript.
 :reproducible:
-:toc:
+:toc: left
+:toclevels: 3
+:doctype: book
 
 Versión del documento {version}
 
@@ -41,11 +43,13 @@ Existe una segunda razón. Si en algún momento necesitas colaborar con un desar
 
 Javascript es un lenguaje que pretende soportar los paradigmas funcional y orientado a objetos ...y falla en ambos.
 
-Estoy exajerando, a lo que me refiero es que siempre ofrece alternativas para saltarse al paradigma. Pero eso no supone un impedimento mayor para seguir los principios de cada paradigma. Tecnicamente hablando, es posible aplicar los principios de la programación orientada a objetos en lenguajes estructurados como VisualBasic 6.
+Estoy exajerando, a lo que me refiero es que siempre ofrece alternativas para saltarse los elementos más "restrictivos" del paradigma. Pero esto no supone un impedimento mayor para seguir los principios de cada paradigma. Tecnicamente hablando, es posible aplicar los principios de la programación orientada a objetos en lenguajes estructurados como VisualBasic 6.
 
-En el caso de JavaScript usaremos los principios de ambos paradigmas cuando tenga sentido hacerlo.
+En el caso de JavaScript usaremos los principios de ambos paradigmas ...cuando tenga sentido hacerlo.
 
-evita la mutabilidad en tus funciones ...cuando tenga sentido hacerlo.
+Evita la mutabilidad en tus funciones ...cuando tenga sentido hacerlo.
+Crea funciones puras ...cuando tenga sentido hacerlo.
+Crea jerarquias de clases ...cuando tenga sentido hacerlo.
 
 === Declaración de valores
 
@@ -133,6 +137,8 @@ const myComplexObject = {
 
 === Espacios en blanco y saltos de línea
 
+==== Espacios en blanco
+
 Los operadores artitmeticos, booleanos, comparadores y de asignación llevan un espacio de separación a la izquierda y derecha.
 
 Las únicas excepciones son los operadores unitarios `!`, `++`, `--`.
@@ -187,6 +193,22 @@ finally {
 }
 ----
 
+Como situación excepcional, es sensato dar formato de "tabla" a estructuras de objetos medianamente elaboradas que cumplan el objetibo de ser templates o enums:
+
+[source,javascript]
+----
+// Es trabajo extra al momento de escribir pero simplifica las posteriores lecturas.
+const tableHeader = [
+  { label: 'Id',      name: 'id',      orientation: 'center', sortable: true },
+  { label: 'Name',    name: 'name',    orientation: 'Left',   sortable: true },
+  { label: 'City',    name: 'city',    orientation: 'Left',   sortable: true },
+  { label: 'Ranking', name: 'ranking', orientation: 'center', sortable: true },
+  { label: 'Medal',   name: 'medal',   orientation: 'center', sortable: true }
+]
+----
+
+==== Saltos de línea
+
 Las constantes y variables no llevan separación por salto de línea:
 
 [source,javascript]
@@ -212,6 +234,7 @@ const addUser = user => {
 
 const editUser = user => {
   const editableUser = findUserById(user.id)
+  editableUser.name = user.name
 }
 ----
 
@@ -225,18 +248,38 @@ const farenheitToCelsius = farenheit => (fahrenheit - 32) * 5 / 9
 
 Declaraciones de arrays y objetos con una lista de atributos demasiado grandes se listan en vertical.
 
+[source,javascript]
+----
+const countries = [
+  'Argentina',
+  'Brasil',
+  'Canadá',
+  'Chile',
+  'Colombia',
+  'España',
+  'Estados Unidos',
+  'Francia',
+  'Italia',
+  'Japón',
+  'México',
+  'Perú',
+  'Portugal',
+  'Reino Unido',
+  'Sudáfrica',
+  'Alemania',
+  'Australia',
+  'China',
+  'India',
+  'Rusia'
+]
+----
 
-
-Los imports no llevan separación de salto de linea.
+==== Los imports no llevan separación de salto de linea.
 
 
 Es tentador separar en "tematicas" los imports para tener más claridad de qué dependencias tiene el archivo en el que estás trabajando. Pero si estás intentando organizar los imports es por que en primer lugar tienes demasiadas dependencias. Tomate el tiempo de analizar porqué hay tantas. Se dice que a mayor cantidad de dependencias, mayor es la cohesión de una parte del sistema. Entre más cohesión, mayor es la probabilidad de que esa parte del sistema necesite ser modificada cuando alguna de sus dependencias cambie.
 
-
-
-
-Las funciones no llevan saltos de línea dentro de su defininción.
-
+==== Las funciones no llevan saltos de línea dentro de su defininción.
 
 Para la mente humana, la lectura de un segmento de código no es distinta de la lectura de otro tipo de texto. Al usar un salto de línea para separar un programa en varias partes, estamos intentando organizar el algoritmo subyaciente en secciones e ideas concretas. Si bien el código es más legible, esto solo trata los sintomas pero ignora el problema raíz: Depende de como se vea, el código está rompiendo, bien el principio de "Single responsability" de la programación orientada a objetos, o el principio de "función pura" de la programación funcional.
 
@@ -247,7 +290,6 @@ La solución es mover cada sección de código a su propia función. Así ganamo
 Darle nombre a un fragmento de código aumenta nuestro vocavulario del dominio del sistema y abre las puertas a un nivel más elevado de abstración; lo que nos permite expresarnos más fácilmente sobre ello en la documentación o incluso en una conversación con otros compañeros del equipo.
 
 También es importante señalar que separar en funciones más pequeñas no siempre simplifica el entendimiento del código por si mismo, pues si este mantiene un alto nivel de cohesión con la función principal, entonces las nuevas funciones, por pequeñas que sean, no pueden existir fuera de su conexto. Sin embargo, este es un primer paso en la dirección correcta en la busqueda de un diseño más correcto.
-
 
 === `,` y `;`
 
@@ -266,10 +308,42 @@ Si tienes un fragmento de código en el que necesitas usar `;`, debes evaluar la
 
 Para comparar la igualdad o diferencia de dos valores primitivos se usan `===`, `!==`
 
+[source,javascript]
+----
+// incorrecto, es dificil predecir el comportamiento en función del tipo de dato de n
+if (n == false) console.log('n is falsey ...probably')
+
+// correcto, es el número 45 o no lo es
+if (n === 45) console.log('n is 45')
+----
+
 ==== `true` y `false` no se comparan
 
 Es redundante utilizar estos operadores para evaluar una expresión booleana contra `true` o `false`.
 
+[source,javascript]
+----
+// incorrecto, es redundante
+if (user.isActive === true) return user
+
+// correcto
+if (user.isActive) return user
+----
+
+==== `truthy` y `falsey` no se comparan
+
+En javascript existen varios valores que son tratados como valores falsos y por lo tanto es redundante compararlos con la triple igualdad
+
+[source,javascript]
+----
+// incorrecto
+if (tasks.length !== 0) return tasks[0]
+if (message === '') return 'no message'
+
+// correcto
+if (tasks.length) return tasks[0]
+if (!message) return 'no message'
+----
 
 ==== Los valores `decimal` no se evaluan con `===` ni `!==`
 
@@ -286,24 +360,82 @@ const areEqual = (a, b) => Math.abs(a - b) < Number.EPSILON
 const firstValue = 0.1 + 0.2
 const secondValue = 0.3
 
+// incorrecto, la suma genera perdida de precisión
 if (firstValue === secondValue)
   console.log('Son iguales')
 
+// correcto, si el error de precisón no es muy grande
+// los valores se consideran iguales
 if (areEqual(firstValue, secondValue))
   console.log('Son iguales')
 ----
 
-
-
-
-
-
-
 === Interpolación vs concatenación
+
+Es preferible la interpolación de strings antes que la concatenación.
+
+[source,javascript]
+----
+// incorrecto
+const wellcomeMessage = 'Wellcome, ' + clientName + '!'
+
+// correcto
+const wellcomeMessage = `Wellcome, ${clientName}!`
+----
+
+En las interpolaciones solo se incluyen valores previamente computados.
+
+[source,javascript]
+----
+// incorrecto
+const hotSiteMessage = `Warning! the site has reached a temperature of ${lang === 'es' ? celsius : (celsius * 9 / 5) + 32 }! call maintenance inmediatly!`
+
+// correcto
+const farenheit = (celsius * 9 / 5) + 32
+const temperature = lang === 'es' ? celsius : farenheit
+const hotSiteMessage = `Warning! the site has reached a temperature of ${temperature}! call maintenance inmediatly! `
+----
+
+Los string son representados en todos los editores de código con un solo color porque tienen la intención de ser considerados como un único token. En el momento en que comienzas a leer el contenido del string pasas de leer un dialecto (javascript) a leer otro. Si tu cerebro se encuentra en modo "lectura de texto humano" y se encuentra de repente con un fragmento de código, tendrá que forzosamente volver a cambiar de modo para calcular qué se va a mostrar en el output y luego tendrás que cambiar una vez más de modo para continuar leyendo el string. Usar una variable con un nombre significativo es la diferencia entre encontrate en tu lectura con un semaforo en rojo o con un tope.
+
 === Strings en una sola linea
 === Array vs Set vs Map
 === Objetos (inicialización, usar valor como variable, casos especiales al comienzo, funciones al final, usar . en vez de [])
-=== longitud de linea (80, 120) 700px, Complejidad de tokens
+=== Longitud de linea
+
+La convención más popular es limitar la longitud de las líneas a 80 caracteres. Tomaremos esto como el ideal a buscar (soft rule) y 120 caracteres como el límite al que no se debe llegar (hard rule).
+
+La mayoría de editores de código e IDEs incluyen la opción para marcar en pantalla dichos límites.
+
+Una pregunta recurrente entre principiantes es ¿Porqué en la era de monitores de tamaños inmensos sigue siendo necesaria esta regla?
+
+Esta es una heuristica inencionalmente imprecisa pero no deja de tener una base racional.
+
+En las imprentas y grupos editoriales es sabido desde hace más de un siglo que la longitud de una línea afecta directamente a la velocidad de lectura. A dia de hoy el conscenso en diseño es que la longitud de un bloque de texto debe estar entre los 600px y los 800px, que es lo justo para no depender de tu mirada periferica ni para tener que girar el cuello y que son las principales fuentes de cancansio en la lectura.
+
+En el caso del códido en texto monoespaciado, 80 caracteres es una aproximación descente a esa regla.
+
+Otras razones para preferir esta limitante es que en monitores grandes puedes abrir dos archivos de código simultaneamente. Además en las comparaciones de versiones con git pueden verse las dos versiones de un archivo sin problemas en doble columna.
+
+Otra heuristica un poco más elaborada pero que reafirma este punto, versa tal que así:
+
+Los humanos leemos cada línea de código en un programa de la misma forma que un interprete o un compilador lo hace; primero con un proceso de analisis léxico, seguido de un analisis sintactico y por último un analisis sémantico (por arriba de esto ya comienzan las abstracciones, casos de uso y dominio del sistema).
+
+Antes de poder decidir si una línea de código es la causante de un bug, primero hay que leer un token a la vez. Entre más larga sea una línea, mas tokens tendrá. A mayor cantidad de tokens por línea más compleja es dicha línea y más lenta es su lectura.
+
+[source,javascript]
+----
+// La primer línea es más larga que la segunda pero también es mucho más simple y en consecuencia
+// es más fácil y rápida de leer
+
+// 14 tokens
+const monthlySalesByUser = userId => fetchMonthlySalesReportByUser(userId).map(userReportSerializer)
+// 43 tokens
+const quadraticEquation = (a, b, c) => (-b + Math.sqrt(Math.pow(b, 2) - (4 * a * c))) / (2 * a)
+----
+
+A nivel léxico, sintactico y semantico es fácil reconocer si una línea de código tiene "algo sospechoso" cuando tiene pocos tokens. Si este primer analisis no levanta sospechas, el cerebro humano comienza a interpretar el significado de los nombres de las variables en busca de discrepancias en un nivel más alto de abstracción.
+
 === Estructura de archivos (dependencias, contenido, interfaz publica)
 === Nombres de variables y archivos (camelCase, constante vs val SCREAMING_SNAKE_CASE, nombres concretos, no abreviaciones, no sobre explicar, is/can/etc para booleanos)
 === Hungarian notation vs Ducktyping
