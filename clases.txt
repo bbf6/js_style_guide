@@ -1,0 +1,143 @@
+Clases
+
+Las clases en JavaScript son completamente opcionales. Incluso si trabajas con un enfoque orientado a objetos puedes resolver la mayoría de tus problemas con funciones generadoras de objetos:
+
+const createUser = name => ({
+  id: uuid(),
+  name,
+  createdAt: new Date()
+  isActive: true,
+  save() { /* ... */ }
+})
+
+Sin embargo, si tienes que trabajar con grupos de objetos cada cual con distinta estructura y estas son de complejidad media o alta, es recomendable utilizar la sintaxis de clases para expresar el diseño de una forma más organizada:
+
+class Book {
+  #id
+  #title
+  #createdAt
+  #isActive
+
+  constructor(title) {
+    this.#id = uuid()
+    this.#title = title
+    this.#createdAt = new Date()
+    this.#isActive = true
+  }
+
+  save() { /* ... */ }
+}
+
+El orden de los elementos de una clase es el siguiente:
+
+- Campos: Van listados hacia abajo y siempre son privados
+- constructor: Función que será llamada cuando se use la palabra reservada del lenguaje "new"
+- getters: Solo si es indispensable, se pueden exponer los campos a través de estas funciones
+- setters: Solo si es indispensable, se pueden modificar los campos externamente a través de estas funciones
+- metodos estaticos: son accesibles directamente desde el
+- metodos publicos: son la interfaz pública a través de la cual el objeto espera que se interactue con él.
+- metodos privados: funciones auxiliares para procesar los campos del objeto.
+
+Múltiples constructores
+
+En JavaScript no existe la sobrecarga de metodos, por lo que no es posible definir múltiples constructores con firmas distintas.
+
+Una forma de salir al paso es crear bifurcaciones en el proceso de creación del objeto en base a uno o más parametros especificos:
+
+constructor(fromDatabase, description) {
+  if (fromDatabase) {
+    this.
+  }
+}
+
+otra alternativa es usar metodos estaticos para la construcción de casos alternativos.
+
+static fromDatabase(data) { return new Book() }
+static withFeedback() {}
+
+No uses herencia para redefinir el constructor
+
+Si tu objeto tiene 3 o más formas de ser construido, es mejor utilizar el patrón de diseño Factory. De este modo se separa la construcción del objeto de la entidad en sí.
+
+class Book { /* ... */ }
+
+const BookType = { FROM_DATABASE: 1, WITH_FEEDBACK: 2, EMPTY: 3 }
+
+// el factory no necesita estar definido como una clase
+createBook = (type, data) => {
+  if (type === BookType.FROM_DATABASE) return new Book()
+  if (type === BookType.WITH_FEEDBACK) return new Book()
+  if (type === BookType.EMPTY) return new Book()
+}
+
+metodos estaticos
+
+Los metodos estaticos solo deben ser utilizados
+
+metodos
+
+Los metodos se diferencian de las funciones en que tienen una relación directa con la clase en la que está definido y sus campos. Si tu metodo no cumple estos requicitos, entonces no debería estar dentro de la clase.
+
+fs.readFile(imgPath, (err, data)=>{
+        // error handle
+        if(err) {
+            throw err;
+        }
+        
+        // get image file extension name
+        const extensionName = path.extname(imgPath);
+        
+        // convert image file to base64-encoded string
+        const base64Image = Buffer.from(data, 'binary').toString('base64');
+        
+        // combine all strings
+        const base64ImageStr = `data:image/${extensionName.split('.').pop()};base64,${base64Image}`;
+    })
+
+
+class Image {
+  loadFromFile(path) {
+    fs.readFile(path, (error, data) => {
+      if (error) throw error
+      this.#bytes = data
+    })
+  }
+}
+
+Solo debe haber una clase por archivo. El nombre del archivo debe estar en PascalCase y ser identico al nombre de la clase
+No debe existir otra cosa en el archivo ademas de la clase, los imports y el export default al final del archivo
+
+Evita el sindrome del God object
+
+Los objetos deidades son un antipatron en el que una sola clase se encarga de hacer todo. Conexiones de base de datos, generación de reportes, mapeo de datos, consumo de APIs de terceros, etc.
+
+El caso más común de God object es la clase User. Si no prestas atención a lo que haces, esta clase puede terminar encargandose del inicio de sesión, operaciones de CRUD, administración de privilegios...
+
+El segundo caso más común de God object es aquel que está en el centro del domino de tu sistema. Si tienes una aplicación de viajes, existe la probabilidad de que tu clase Travel sea un God object. si tu aplicación es un kanban, seguramente sea la clase Task.
+
+No confundir el God object con el patrón de diseño Facade en el que una entidad abstrae la complejidad de muchos subsistema en una sola interfaz.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+asdasd
