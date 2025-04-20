@@ -1,0 +1,11 @@
+if/else/switch
+
+if es la palabra reservada del lenguage para el control de flujo favorito por antonomasia. Procura mantenerlo en una sola línea en la medida de lo posible.
+
+Redirige el control de flujo a otra función.
+
+interrumpe la ejecución
+
+evita usar else
+
+
