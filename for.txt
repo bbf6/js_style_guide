@@ -1,0 +1,51 @@
+for y while
+
+No uses for ni while. Tienen una tendencia natural a degenerar en código espagueti. Además, no se alinean ni con los pricipios del paradigma orientado a objetos ni al funcional.
+
+Si lo que quieres es iterar un array, usa las funciones del API Array nativo de JavaScript. Lo que implica hacer la pregunta "¿Para qué quiero iterar el array?" y en función de la respuesta, utilizar la herramienta especifica para el problema especifico.
+
+// incorrecto, estilo imperativo
+// le decimos al sistema como hacerlo
+const activeBoxes = []
+for (let i = 0; i < boxes.length; i++)
+  if (boxes[i].active)
+    activeBoxes.push(boxes[i])
+
+// correcto, estilo declarativo
+// le dicimos al sistema que queremos
+const activeBoxes = boxes.filter(b => b.active)
+
+Si el la intención de la iteración requiere un tratamiento muy especifico o tiene efectos secundarios, utiliza la función Array.prototype.forEach()
+
+Una alternativa a la función Array.prototype.forEach() es el "for of" pero no es recomendable, pues de nuevo, te obliga a programar de forma imperativa.
+
+Otra alternativa para iteraciones no dependientes de arrays son funciones recursivas.
+
+Se reserva el uso de for y while para casos donde la optimización y performance de una parte del programa es más apremiante que su legibilidad y mantenimiento.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

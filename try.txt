@@ -1,0 +1,5 @@
+try catch
+
+Usa try/catch unicamente si se espera que el código que contiene puede lanzar una excepción, y dicha excepción es recuperable.
+
+

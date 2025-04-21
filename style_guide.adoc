@@ -443,7 +443,6 @@ A nivel léxico, sintactico y semantico es fácil reconocer si una línea de có
 === Función pura (no efectos secundarios, single responsability, inmutable, valor de retorno) (función vs metodo vs procedimiento vs sub rutina)
 === Monads (para objetos complejos)
 === Promise vs callback
-=== Identación (monads, anidación profunda)
 === Comentarios (jdocs, no ocultar entidades ni significados, solo interfaz publica, redirigir a documentación, no usar para guardar código, linters configs)
 Good code its like a joke; it needs no explanation
 === Anotaciones
@@ -465,6 +464,7 @@ Good code its like a joke; it needs no explanation
 === Classes (solo para entidades complejas, asegura Liskov)
 === Imports (no usar require(), no usar wildcard, importar de un archivo solo una vez, sin separación de linea entre imports, orden, no incluir extensión del archivo .js .jsx .json)
 === Exports (exportar funciones en vez de objetos, el default export debe llamarse igual que el archivo en el que se encuentra, index es la excepción)
+=== testing?
 === Café para los más cafeteros (100 lineas por archivo, 10 lineas por función, como máximo 3 niveles de identación)
 
 

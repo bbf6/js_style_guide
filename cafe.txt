@@ -1,0 +1,23 @@
+Cafe para los más cafeteros
+
+No hace falta que cumplas con las siguientes recomendaciones. Al ser completamente albitrarias, no importa romperlas. 
+
+Como el título lo sugiere, esto es algo que nadie, salvo tú y algún otro sibarita, notarán si no se cumple.
+
+Al ser más restrictivas, es más común encontrar excepciones dónde no son aplicables.
+
+Dicho todo esto, intentar trabajar bajo estas restricciones te obligará a pensar fuera de la caja para alcanzar tus objetivos. Estarás obligado a seguir los principios de los paradigmas funcionales y orientado a objetos para encontrar formas creativas de salir al paso.
+
+Seguir estas recomendaciones de forma consistente, mejorará el nivel de tu código.
+
+
+
+No más de 80 caracteres de código por línea (hard rule).
+
+No más de 100 líneas de código por archivo.
+
+No más de 3 niveles de identación en ninguna parte del código.
+
+No más de 12 líneas de código dentro de ninguna función.
+
+No más de 5 imports por archivo.

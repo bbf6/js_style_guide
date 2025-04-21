@@ -1,5 +1,12 @@
 Estructura de funciones
 
+Las funciones no pueden tener más de 50 líneas de código dentro. Esta es aproximadamente la cantidad de líneas que caben en un monitor horizontal al uso. Dicho de otra forma, la intención es poder ver la función de principio a fin sin necesidad de hacer scroll.
+
+Una función más larga que eso, es sintomatica de saber hacer demasiadas cosas.
+
+
+parametros
+
 Los parametros de una función se listan en vertical, separados por un espacio a la derecha de cada coma.
 
 const deploy = (app, host, port) => { /* ... */ }
@@ -119,10 +126,10 @@ Si tienes un objeto que acepta muchas configuraciones independientes pero consec
 document.cursor(10, 10)
 document.setImage('src/assets/logo.png')
 document.cursor(10, 70)
-document.setFont(16)
+document.setFontSize(16)
 document.setText('Reporte de ingresos mensuales')
 document.cursor(10, 90)
-document.setFont(12)
+document.setFontSize(12)
 document.setText('...')
 print(document)
 
@@ -131,10 +138,10 @@ document
   .cursor(10, 10)
   .setImage('src/assets/logo.png')
   .cursor(10, 70)
-  .setFont(16)
+  .setFontSize(16)
   .setText('Reporte de ingresos mensuales')
   .cursor(10, 90)
-  .setFont(12)
+  .setFontSize(12)
   .setText('...')
 print(document)
 
@@ -190,7 +197,7 @@ const getTaskById = async (req, res) => {
   }
 }
 
-// correcto
+// correcto, cada línea es su propia documentación
 const getTasks = () => { /* ... */ }
 const validTaskOnly = () => { /* ... */ }
 
@@ -227,11 +234,11 @@ JSDocs es simplemente una convención a la hora de escribir comentarios que lueg
  * Displays a notification with customizable options.
  * @param {Object} options - Configuration object for the notification.
  * @param {string} [options.title=''] - Title of the notification.
- * @param {string} [options.message=''] - Body/content of the notification.
+ * @param {string} [options.message=''] - Content of the notification.
  * @param {'top-right'|'top-left'|'bottom-right'|'bottom-left'} [options.position='top-right'] - Position where the notification appears.
- * @param {number} [options.duration=5000] - Duration (in milliseconds) before the notification auto-closes.
+ * @param {number} [options.duration=5000] - Duration in milliseconds before the notification auto-closes.
  * @param {boolean} [options.closeButton=false] - Whether to show a close button.
- * @param {function} [options.log=console.log] - Callback function for logging (e.g., for debugging).
+ * @param {function} [options.log=console.log] - Callback function for logging.
  * @example
  * notify({
  *   title: 'Success!',
@@ -257,7 +264,17 @@ Debe documentarse únicamente las funciones que componen la interfaz pública.
 
 En general, evita documentar código dentro del flujo esperado de la arquitectura, pues la arquitectura es ya la documentación.
 
-Las funciones ideales a documentar son las que se encuentran en /src/lib, /src/utils o /src/components/base
+No documentes lo que no hace falta documentar. A veces una línea de código es su propia documentación.
+
+// esto es redundante y no añade nada que no pueda deducirse de la firma de la función
+/**
+ * Gets a user by an id
+ * @param {number} [id] - id 
+ * @returns {User}
+ */
+const getUserById = id => { /* ... */ }
+
+Las funciones ideales a documentar son las que se encuentran en /src/lib, /src/utils, /src/components/base o similas.
 
 Añade herramientas como jsdoc-to-markdown para exportar automáticamente todos los comentarios al directorio /docs como un documento de markdown.
 https://www.npmjs.com/package/jsdoc-to-markdown
@@ -305,7 +322,9 @@ En el desarrollo de software existe una metodología de refactorización pasiva 
 
 Si visitas un archivo para añadir una nueva función, tomate un minuto para revisar que no tenga algo sospechoso.
 
-Esto es por supuesto un ideal que no siempre es posible cumplir. Por ello, existe otro uso para los comentarios: Las anotaciones, comentarios que comienzan con una palabra fetiche para llamar la atención de otros programadores sobre un fragmento de código. A continuación se describen los pertencecientes a la cultura popular, pero es posible definir como equipo las propias.
+Esto es por supuesto un ideal que no siempre es posible cumplir. Por ello, existe otro uso para los comentarios: Las anotaciones, son comentarios que comienzan con una palabra fetiche para llamar la atención de otros programadores sobre un fragmento de código. A continuación se describen los pertencecientes a la cultura popular, pero es posible definir como equipo las propias.
+
+También considera la posibilidad de usar herramientas de adminsitración de proyectos (Jira, Trello, etc) como alternativa a las anotaciones.
 
 
 TODO
@@ -332,7 +351,7 @@ OPTIMIZE
 Usa OPTIMIZE para hacer enfasis en un fragmento de código que es lento o ineficiente y puede causar problemas de performance en el futuro.
 
 // OPTIMIZE: A subquery in the select section may cause a big performance 
-// issue when the number of records grow
+// issue when the number of records grows
 db.users.findAll({
   attributes: ['id', 'name', sequelize.literal(`(select count(*) from tasks)`)],
   where: { id }
@@ -358,7 +377,7 @@ Usa REVIEW para todo aquello que necesite una confirmación de que está funcion
 // of the proces?
 const discardTicket = id => {
   /* ... */
-  userMailer.send()
+  userMailer.send(user)
 }
 
 

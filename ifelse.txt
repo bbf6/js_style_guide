@@ -6,6 +6,104 @@ Redirige el control de flujo a otra función.
 
 interrumpe la ejecución
 
+reestructura tus evaluaciones para evitar añadir identanción incecesaria
+
+// incorrecto, demasiadas bifurcaciones a seguir
+if (cart.items) {
+  if (client.creditAvailable > CREDIT_LIMIT) {
+    purchase(cart.items)
+  }
+  else {
+    console.log('You have exceed your credit limit')
+  }
+}
+else {
+  console.log('You haven't choose any item yet.)
+}
+
+// mejor, cada caso especial es un punto de retorno
+// el hapy path continua si ningún if se cumple
+if (!cart.items) return console.log('You haven't choose any item yet.)
+if (client.creditAvailable <= CREDIT_LIMIT)
+  return console.log('You have exceed your credit limit')
+purchase(cart.items)
+
+
+// incorrecto, añade una identación incecesaria
+if (cart.items) {
+  const prices = cart.items.map(i => i.price)
+  const subtotal = prices.reduce((a, b) => a + b, 0)
+  purchase(subtotal)
+}
+
+// correcto, el código se mantiene al mismo nivel
+if (!cart.items) return
+const prices = cart.items.map(i => i.price)
+const subtotal = prices.reduce((a, b) => a + b, 0)
+purchase(subtotal)
+
+reestructura tus evaluaciones para evitar anidar if
+
 evita usar else
+
+no pongas evaluaciones booleanas complejas dentro del if
+
+// incorrecto, interrumpe la lectura
+if (cart.items 
+  && client.creditAvailable > CREDIT_LIMIT 
+  && (store.isOpen || store.online)
+)
+  purchase(cart.items)
+
+// correcto, oculta la complejidad de la expresión booleana
+// en varaible o de ser posible, en funciones fuera del 
+// flujo del proceso principal.
+const hasCredit = client.creditAvailable > CREDIT_LIMIT
+const isStoreOpen = store.isOpen || store.online
+const canPurchase = cart.items && hasCredit && isStoreOpen
+/* ... */
+if (canPurchase) purchase(cart.items)
+
+
+
+
+
+Operador ternario
+
+El operador ternario se usa para asignaciones de valores, no para controlar el flujo de la aplicación.
+
+El operador ternario nunca se anida
+
+// demasiado complicado
+const width = isExpanded ? screenWidth : (isMobile ? '100%' : '300px')
+
+// Más largo, pero más fácil de entender y más fácil de ignorar
+const getWidth = () => {
+  if (isExpanded) return scrrenWidth
+  if (isMobile) return '100%'
+  return '300px'
+}
+
+const width = getWidth()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
