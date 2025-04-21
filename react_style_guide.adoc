@@ -1,0 +1,224 @@
+:version: 0.0.1
+== Guía de estilos para React
+
+Versión del documento {version}
+
+=== Propósito
+
+Este documento pretende ser una recopilación de recomendaciones y buenas prácticas al momento de trabajar bajo la biblioteca React.
+
+=== Base
+
+Este documento se sostiene sobre la guía de estilos de JavaScript, sobreescribiendo o añadiendo algunos puntos.
+
+=== Componentes
+
+==== Estructura
+
+Los componentes en React se definen como funciones de flecha. El nombre del componente y el nombre del archivo donde está definido debe ser el mismo y debe estar en PascalCase.
+
+Solo debe existir un componente declarado por archivo.
+
+Todo archivo que represente un componente no debe tener más de 300 líneas de código.
+
+==== Segmentación???
+
+==== useState
+==== useContext
+==== useSelect
+==== CSS
+
+==== Renderizado
+
+Todo el código (funciones y constantes) que no dependan de alguna función dentro del ciclo de vida del componente, debe declararse fuera del mismo para evitar redefinir los mismos valores una y otra vez en cada renderización.
+
+Una vez extraidas dichas funciones y constantes, evalua si vale la pena mantener esas declaraciones en el mismo archivo o si es conveniente moverlas a otras secciones del proyecto.
+
+[source,javascript]
+----
+// incorrecto, DEFAULT_MESSAGE se declara incecesariamente en cada render
+const NotificationSnackBar = ({ title, message }) => {
+  const DEFAULT_MESSAGE = 'If you see this, you forgot to add a message'
+
+  return (
+    <div className="c-notification-snackbar">
+      <label>{ title }</label>
+      <label>{ message || DEFAULT_MESSAGE }</label>
+    </div>
+  )
+}
+
+// mejor, solo se renderiza al momento de importar el archivo
+const DEFAULT_MESSAGE = 'If you see this, you forgot to add a message'
+
+const NotificationSnackBar = ({ title, message }) => {
+  return (
+    <div className="c-notification-snackbar">
+      <label>{ title }</label>
+      <label>{ message || DEFAULT_MESSAGE }</label>
+    </div>
+  )
+}
+
+// aún mejor, se importa desde un archivo especifico
+import { DEFAULT_MESSAGE } from 'src/constants/messages'
+
+const NotificationSnackBar = ({ title, message }) => {
+  return (
+    <div className="c-notification-snackbar">
+      <label>{ title }</label>
+      <label>{ message || DEFAULT_MESSAGE }</label>
+    </div>
+  )
+}
+----
+
+Los valores que sean dependientes de algún valor dentro del ciclo de vida de React deben usar useMemo() para evitar reasignaciones inecesarias.
+
+Las funciones utilizadas dentro del ciclo de vida de React deben llamarse a través de useEffect() para evitar llamadas inecesarias en cada render.
+
+Las funciones declaradas dentro del componente ya que utilizan elementos de React, deben utilizar useCallback() para evitar recrearla en cada render.
+
+==== React.memo
+
+Usa React.memo para componentes que sean:
+
+Componentes con baja probabilidad de que sus propiedades cambien en el tiempo.
+
+Componentes estáticos, que no dependan de propidedades externas.
+
+Componentes complejos cuyo costo de renderización sea alto.
+
+No utilizar en componentes con:
+
+Propiedades complejas como objetos y arrays. La revisión del cambio de estado de las propiedades puede termianr siendo más costoso que el propio renderizado.
+
+Componentes cuyas propiedades cambian cientos de veces por segundo.
+
+Componentes simples, cuya renderización no es muy costosa.
+
+No se recomienda usar React.memo de forma preventiva sino de forma correctiva.
+
+==== Valor de retorno
+
+
+El componente solo debe retornar un único JSX.
+
+Es aceptable, sin embargo, que el componente devuelva un fragment vacío como flujo alternativo en vez del JSX principal.
+
+[source,javascript]
+----
+const MessageBanner = ({ message, show = true }) => {
+  if (!show) return <></>
+
+  return (
+    <div class="message-banner">
+      <label>{ message }</label>
+    </div>
+  )
+}
+----
+
+También es aceptable un tag con contenido en vez de un fragment si no es muy elaborado.
+
+[source,javascript]
+----
+const ListItems = ({ items = [] }) => {
+  if (!items.length) return <label>No items found.</label>
+
+  return (
+    <ul>
+      {
+        items.map(i => (
+          <li>{ item.name }</li>
+        ))
+      }
+    </ul>
+  )
+}
+----
+
+Si el renderizado alternativo es más complejo que un simple tag, entonces debes separar tu código en dos componentes separados y administrarlos desde un FactoryComponent.
+
+[source,javascript]
+----
+// este componente funciona como un FactoryComponent
+const Card = ({ label, type }) => {
+  if (type === CardType.DASHBOARD) return <DashboardCard label={ label } />
+  if (type === CardType.PERSON) return <PersonCard label={ label } />
+  if (type === CardType.MEDIA) return <MediaCard label={ label } />
+}
+
+const DashboardCard = ({ label }) => { /* ... */ }
+const PersonCard = ({ label }) => { /* ... */ }
+const MediaCard = ({ label }) => { /* ... */ }
+----
+
+=== Instanciación
+
+Al momento de instanciar un componente, debe hacerse con un solo tag autocerrado con un espacio de separación entre el nombre del componente y el cierre.
+
+Si el componente necesita parametros, estos van entre llaves con un espacio de separación entre el valor y las llaves. Para los valores string se usan dobles comillas para mantener consistencia con HTML.
+
+<li>
+  <Card label="Stadistics" type={ CardType.DASHBOARD } />
+</li>
+
+Si un componente espera argumentos a través de props.children, entonces necesitará forzosamente instanciarse como una pareja de tags.
+
+<li>
+  <Card type={ CardType.DASHBOARD }>
+    <label>Stadistics</label>
+  </Card>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+...
